@@ -1,25 +1,13 @@
-package main
+package channel_test
 
 import (
 	"fmt"
+	"github.com/coruna-gophers/generics-poc/channel"
 	"io"
 	"log"
-	"strconv"
+	"testing"
 	"time"
-
-	"golang.org/x/exp/constraints"
-
-	"github.com/coruna-gophers/generics-poc/channel"
-	"github.com/coruna-gophers/generics-poc/kv"
 )
-
-func print[T any](x ...T) {
-	fmt.Println(x)
-}
-
-func isOrdered[T constraints.Ordered](x, y T) bool {
-	return x < y
-}
 
 func consume[T any](id string, interval time.Duration, fn channel.Pull[T]) {
 	for {
@@ -35,25 +23,7 @@ func consume[T any](id string, interval time.Duration, fn channel.Pull[T]) {
 	}
 }
 
-func main() {
-	print([]int{1, 2, 3})
-	print(isOrdered(1, 2))
-
-	kv := kv.New[string, int]()
-	kv.Put("foo", 1)
-	kv.Put("bar", 2)
-
-	v, err := kv.Get("foo")
-	if err != nil {
-		panic(err)
-	}
-	print("Key foo, Value ", strconv.Itoa(v))
-	v, err = kv.Get("bar")
-	if err != nil {
-		panic(err)
-	}
-	print("Key bar, Value ", strconv.Itoa(v))
-
+func TestNewFanOut(t *testing.T) {
 	fo := channel.NewFanOut[int]()
 
 	pull1, unsubscribe1 := fo.Subscribe(3)
