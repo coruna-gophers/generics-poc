@@ -20,8 +20,8 @@ func (kv *Store[K, V]) Put(key K, value V) error {
 	return nil
 }
 
-func New[K comparable, V any]() *Store[K,V] {
-	return &Store[K,V]{
+func New[K comparable, V any]() *Store[K, V] {
+	return &Store[K, V]{
 		store: make(map[K]V),
 	}
 }

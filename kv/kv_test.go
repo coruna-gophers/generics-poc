@@ -2,9 +2,10 @@ package kv_test
 
 import (
 	"fmt"
-	"github.com/coruna-gophers/generics-poc/kv"
 	"strconv"
 	"testing"
+
+	"github.com/coruna-gophers/generics-poc/kv"
 )
 
 func TestKV(t *testing.T) {

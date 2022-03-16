@@ -2,11 +2,12 @@ package channel_test
 
 import (
 	"fmt"
-	"github.com/coruna-gophers/generics-poc/channel"
 	"io"
 	"log"
 	"testing"
 	"time"
+
+	"github.com/coruna-gophers/generics-poc/channel"
 )
 
 func consume[T any](id string, interval time.Duration, fn channel.Pull[T]) {
@@ -28,11 +29,11 @@ func TestNewFanOut(t *testing.T) {
 
 	pull1, unsubscribe1 := fo.Subscribe(3)
 	defer unsubscribe1()
-	go consume[int]("ch1", time.Second, pull1)
+	go consume("ch1", time.Second, pull1)
 
 	pull2, unsubscribe2 := fo.Subscribe(3)
 	defer unsubscribe2()
-	go consume[int]("ch2", 2*time.Second, pull2)
+	go consume("ch2", 2*time.Second, pull2)
 
 	for i := 0; i < 10; i++ {
 		fo.Publish(i)

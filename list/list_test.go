@@ -2,8 +2,9 @@ package list_test
 
 import (
 	"fmt"
-	"github.com/coruna-gophers/generics-poc/list"
 	"testing"
+
+	"github.com/coruna-gophers/generics-poc/list"
 )
 
 func TestList(t *testing.T) {
@@ -25,12 +26,12 @@ func TestList(t *testing.T) {
 	l.Update(3, 10)
 	fmt.Println(l)
 
-	var findFn list.FindFn[int]
-	findFn = func(index int, item int) bool {
-		return item%2 == 0
+	var findOdd list.FindFn[int]
+	findOdd = func(index int, item int) bool {
+		return item%2 == 1
 	}
 
-	index, err := l.FindWhere(findFn)
+	index, err := l.FindWhere(findOdd)
 	if err != nil {
 		t.Fatalf("error finding first even element: %v", err)
 	}
