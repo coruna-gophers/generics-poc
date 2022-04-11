@@ -56,10 +56,6 @@ func (t *Tree) insert(node *Node, elem interface{}) {
 	}
 }
 
-func (t *Tree) Delete(node *Node, elem interface{}) {
-
-}
-
 func (t *Tree) Find(node *Node, elem interface{}) {
 
 }
