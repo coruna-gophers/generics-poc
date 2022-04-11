@@ -1,4 +1,4 @@
-package tree_test
+package gtree_test
 
 import (
 	"fmt"
@@ -7,12 +7,13 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/exp/constraints"
 
-	"github.com/coruna-gophers/generics-poc/tree"
+	"github.com/coruna-gophers/generics-poc/gtree"
 )
 
 func TestTree_Insert(t *testing.T) {
-	tr := tree.New(compareInt)
+	tr := gtree.New[int, string](compare[int])
 	tr.Insert(4, "v4")
 	tr.Insert(1, "v1")
 	tr.Insert(3, "v3")
@@ -25,14 +26,27 @@ func TestTree_Insert(t *testing.T) {
 		4: "v4",
 	}
 	result := map[int]string{}
-	tr.Walk(func(key, value interface{}) {
-		result[key.(int)] = value.(string)
+	tr.Walk(func(key int, value string) {
+		result[key] = value
 	})
 	assert.Equal(t, expected, result)
 }
 
+func compare[K constraints.Ordered](keyA, keyB K) int {
+	if keyA == keyB {
+		return 0
+	}
+	if keyA < keyB {
+		return -1
+	}
+	if keyA == keyB {
+		return 0
+	}
+	return 1
+}
+
 func TestTree_Find(t *testing.T) {
-	tr := tree.New(compareInt)
+	tr := gtree.New[int, string](compare[int])
 	tr.Insert(1, "v1")
 	tr.Insert(15, "v15")
 	tr.Insert(121, "v121")
@@ -46,7 +60,7 @@ func TestTree_Find(t *testing.T) {
 }
 
 func TestTree_FindNotFound(t *testing.T) {
-	tr := tree.New(compareInt)
+	tr := gtree.New[int, string](compare[int])
 	tr.Insert(1, "v1")
 	tr.Insert(15, "v15")
 	tr.Insert(121, "v121")
@@ -56,55 +70,43 @@ func TestTree_FindNotFound(t *testing.T) {
 
 	value, found := tr.Find(666)
 	require.False(t, found)
-	require.Nil(t, value)
+	require.Empty(t, value)
 }
 
-var sizes = []int{1e2, 1e3, 1e4}
+var sizes = []int{1e6}
 
-func BenchmarkInsert(b *testing.B) {
-	for _, n := range sizes {
-		b.Run(fmt.Sprintf("BenchmarkInsert_%d", n), func(b *testing.B) {
-			s := generateRandomSlice(n)
-			b.ResetTimer()
-
-			for i := 0; i < b.N; i++ {
-				getTree(s)
-			}
-		})
-	}
-}
+//func BenchmarkInsert(b *testing.B) {
+//	for _, n := range sizes {
+//		b.Run(fmt.Sprintf("BenchmarkInsert_%d", n), func(b *testing.B) {
+//			s := generateRandomSlice(n)
+//			b.ResetTimer()
+//
+//			for i := 0; i < b.N; i++ {
+//				getTree(s)
+//			}
+//		})
+//	}
+//}
 
 func BenchmarkFind(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkFind_%d", n), func(b *testing.B) {
 			s := generateRandomSlice(n)
-			tr := getTree(s)
-			key := randRange(0, n)
-			b.ResetTimer()
+			b.Log("after generateRandomSlice")
 
+			tr := getTree(s)
+			b.Log("after getree")
+
+			key := randRange(0, n)
+			b.Log("after rand")
+
+			b.ResetTimer()
+			b.Log("after timer")
 			for i := 0; i < b.N; i++ {
 				tr.Find(key)
 			}
 		})
 	}
-}
-
-func compareInt(keyA, keyB interface{}) int {
-	aInt, ok := keyA.(int)
-	if !ok {
-		panic(fmt.Errorf("'%s' is not an integer", keyA))
-	}
-	bInt, ok := keyB.(int)
-	if !ok {
-		panic(fmt.Errorf("'%s' is not an integer", keyB))
-	}
-	if aInt < bInt {
-		return -1
-	}
-	if aInt == bInt {
-		return 0
-	}
-	return 1
 }
 
 func generateRandomSlice(n int) []int {
@@ -115,8 +117,8 @@ func generateRandomSlice(n int) []int {
 	return s
 }
 
-func getTree(s []int) *tree.Tree {
-	tr := tree.New(compareInt)
+func getTree(s []int) *gtree.Tree[int, int] {
+	tr := gtree.New[int, int](compare[int])
 	for k, v := range s {
 		tr.Insert(k, v)
 	}
