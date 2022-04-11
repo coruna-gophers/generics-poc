@@ -4,9 +4,31 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/coruna-gophers/generics-poc/tree"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/coruna-gophers/generics-poc/tree"
 )
+
+func TestInsert(t *testing.T) {
+	tr := tree.New(compareInt)
+	tr.Insert(1, "v1")
+	tr.Insert(2, "v2")
+	tr.Insert(3, "v3")
+	tr.Insert(4, "v4")
+
+	expected := map[int]string{
+		1: "v1",
+		2: "v2",
+		3: "v3",
+		4: "v4",
+	}
+	result := map[int]string{}
+	tr.Walk(func(key, value interface{}) {
+		result[key.(int)] = value.(string)
+	})
+
+	assert.Equal(t, expected, result)
+}
 
 func compareInt(a, b interface{}) int {
 	if a == b {
@@ -27,19 +49,4 @@ func compareInt(a, b interface{}) int {
 		return 0
 	}
 	return 1
-}
-
-func TestInsert(t *testing.T) {
-	tr := tree.New(compareInt)
-	tr.Insert(1)
-	tr.Insert(2)
-	tr.Insert(3)
-	tr.Insert(4)
-
-	var result []interface{}
-	tr.Walk(func(n *tree.Node) {
-		result = append(result, n.Elem)
-	})
-
-	assert.Equal(t, []interface{}{1, 2, 3, 4}, result)
 }

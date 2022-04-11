@@ -3,81 +3,101 @@ package tree
 // -1: a smaller than b
 // 0: a equals to b
 // 1: a greater than b
-type Comparator func(a, b interface{}) int
+type Comparator func(keyA, keyB interface{}) int
 
 type Tree struct {
-	Root    *Node
-	Compare Comparator
+	root    *node
+	compare Comparator
 }
 
-type Node struct {
-	Right *Node
-	Left  *Node
-	Elem  interface{}
+type node struct {
+	right *node
+	left  *node
+	entry *entry
+}
+
+type entry struct {
+	key   interface{}
+	value interface{}
 }
 
 func New(comparator Comparator) *Tree {
 	return &Tree{
-		Root:    &Node{},
-		Compare: comparator,
+		root:    &node{},
+		compare: comparator,
 	}
 }
 
-func (t *Tree) Insert(elem interface{}) {
-	if t.Root.Elem == nil {
-		t.Root.Elem = elem
+func (t *Tree) Insert(key, value interface{}) {
+	entry := &entry{
+		key:   key,
+		value: value,
+	}
+	if t.root.entry == nil {
+		t.root.entry = entry
 		return
 	}
-
-	t.insert(t.Root, elem)
+	t.insert(t.root, entry)
 }
 
-func (t *Tree) insert(node *Node, elem interface{}) {
-	c := t.Compare(elem, node.Elem)
+func (t *Tree) insert(n *node, entry *entry) {
+	c := t.compare(n.entry.key, entry.key)
 	if c < 0 || c == 0 {
-		if node.Left == nil {
-			left := &Node{
-				Elem: elem,
+		if n.left == nil {
+			n.left = &node{
+				entry: entry,
 			}
-			node.Left = left
 		} else {
-			t.insert(node.Left, elem)
+			t.insert(n.left, entry)
 		}
 	}
 	if c > 0 {
-		if node.Right == nil {
-			right := &Node{
-				Elem: elem,
+		if n.right == nil {
+			n.right = &node{
+				entry: entry,
 			}
-			node.Right = right
 		} else {
-			t.insert(node.Right, elem)
+			t.insert(n.right, entry)
 		}
 	}
 }
 
-func (t *Tree) Find(node *Node, elem interface{}) {
-
+func (t *Tree) Find(key interface{}) (interface{}, bool) {
+	node, found := t.find(t.root, key)
+	if found {
+		return node.entry.value, true
+	}
+	return nil, false
 }
+
+func (t *Tree) find(n *node, key interface{}) (*node, bool) {
+	c := t.compare(n.entry.key, key)
+	if c == 0 {
+		return n, true
+	}
+	return nil, false
+}
+
+type Walker func(key, value interface{})
 
 // Walk traverses the tree in order
-func (t *Tree) Walk(cb func(n *Node)) {
-	t.walk(t.Root, cb)
+func (t *Tree) Walk(cb Walker) {
+	t.walk(t.root, cb)
 }
 
-func (t *Tree) walk(node *Node, cb func(n *Node)) {
-	if node.Left != nil {
-		cb(node)
-		t.walk(node.Left, cb)
+func (t *Tree) walk(n *node, cb Walker) {
+	if n.left != nil {
+		cb(n.entry.key, n.entry.value)
+		t.walk(n.left, cb)
 		return
 	}
-	if node.Left == nil && node.Right == nil {
-		cb(node)
+	if n.left == nil && n.right == nil {
+		cb(n.entry.key, n.entry.value)
 		return
 	}
-	if node.Right != nil {
-		cb(node)
-		t.walk(node.Right, cb)
+	if n.right != nil {
+		cb(n.entry.key, n.entry.value)
+		t.walk(n.right, cb)
 		return
 	}
 }
