@@ -75,6 +75,12 @@ func (t *Tree) find(n *node, key interface{}) (*node, bool) {
 	if c == 0 {
 		return n, true
 	}
+	if c < 0 && n.left != nil {
+		return t.find(n.left, key)
+	}
+	if c > 0 && n.right != nil {
+		return t.find(n.right, key)
+	}
 	return nil, false
 }
 
