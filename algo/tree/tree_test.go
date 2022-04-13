@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/coruna-gophers/generics-poc/algo"
+	"github.com/coruna-gophers/generics-poc/algo/helper"
 	"github.com/coruna-gophers/generics-poc/algo/tree"
 )
 
@@ -64,9 +64,9 @@ var sizes = []int{1e2, 1e3, 1e4, 1e6}
 func BenchmarkInsert(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkInsert_%d", n), func(b *testing.B) {
-			s := algo.GenerateRandomSliceSet(n)
+			s := helper.GenerateRandomSliceSet(n)
 			tr := getTree(s)
-			key := algo.Higher(s) + 1
+			key := helper.Higher(s) + 1
 
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
@@ -79,9 +79,9 @@ func BenchmarkInsert(b *testing.B) {
 func BenchmarkFind(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkFind_%d", n), func(b *testing.B) {
-			s := algo.GenerateRandomSliceSet(n)
+			s := helper.GenerateRandomSliceSet(n)
 			tr := getTree(s)
-			key := algo.Higher(s)
+			key := helper.Higher(s)
 
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {

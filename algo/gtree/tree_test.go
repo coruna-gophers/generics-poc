@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/exp/constraints"
 
-	"github.com/coruna-gophers/generics-poc/algo"
 	"github.com/coruna-gophers/generics-poc/algo/gtree"
+	"github.com/coruna-gophers/generics-poc/algo/helper"
 )
 
 func TestTree_Insert(t *testing.T) {
@@ -78,8 +78,8 @@ var sizes = []int{1e2, 1e3, 1e4, 1e6}
 func BenchmarkInsert(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkInsert_%d", n), func(b *testing.B) {
-			s := algo.GenerateRandomSliceSet(n)
-			key := algo.Higher(s) + 1
+			s := helper.GenerateRandomSliceSet(n)
+			key := helper.Higher(s) + 1
 			tr := getTree(s)
 
 			b.ResetTimer()
@@ -93,8 +93,8 @@ func BenchmarkInsert(b *testing.B) {
 func BenchmarkFind(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkFind_%d", n), func(b *testing.B) {
-			s := algo.GenerateRandomSliceSet(n)
-			key := algo.Higher(s)
+			s := helper.GenerateRandomSliceSet(n)
+			key := helper.Higher(s)
 			tr := getTree(s)
 
 			b.ResetTimer()
