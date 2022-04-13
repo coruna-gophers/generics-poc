@@ -127,6 +127,7 @@ func generateRandomSliceSet(n int) []int {
 			i--
 			continue
 		}
+		set[rn] = struct{}{}
 		s[i] = rn
 	}
 	return s
