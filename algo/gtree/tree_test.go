@@ -94,16 +94,12 @@ func BenchmarkFind(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkFind_%d", n), func(b *testing.B) {
 			s := algo.GenerateRandomSliceSet(n)
-			b.Log("after generateRandomSlice")
 
 			tr := getTree(s)
-			b.Log("after getree")
 
 			key := algo.RandRange(0, n)
-			b.Log("after rand")
 
 			b.ResetTimer()
-			b.Log("after timer")
 			for i := 0; i < b.N; i++ {
 				tr.Find(key)
 			}
