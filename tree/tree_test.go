@@ -132,8 +132,8 @@ func generateRandomSliceSet(n int) []int {
 
 func getTree(s []int) *tree.Tree {
 	tr := tree.New(compareInt)
-	for k, v := range s {
-		tr.Insert(k, v)
+	for i := 0; i < len(s); i++ {
+		tr.Insert(s[i], s[i])
 	}
 	return tr
 }
