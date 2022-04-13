@@ -79,10 +79,12 @@ func BenchmarkInsert(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkInsert_%d", n), func(b *testing.B) {
 			s := algo.GenerateRandomSliceSet(n)
-			b.ResetTimer()
+			key := algo.Higher(s) + 1
+			tr := getTree(s)
 
+			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
-				getTree(s)
+				tr.Insert(key, key)
 			}
 		})
 	}
