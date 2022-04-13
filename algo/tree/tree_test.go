@@ -2,13 +2,12 @@ package tree_test
 
 import (
 	"fmt"
-	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/slices"
 
+	"github.com/coruna-gophers/generics-poc/algo"
 	"github.com/coruna-gophers/generics-poc/algo/tree"
 )
 
@@ -65,9 +64,9 @@ var sizes = []int{1e2, 1e3, 1e4}
 func BenchmarkInsert(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkInsert_%d", n), func(b *testing.B) {
-			s := generateRandomSliceSet(n)
+			s := algo.GenerateRandomSliceSet(n)
 			tr := getTree(s)
-			key := higher(s) + 1
+			key := algo.Higher(s) + 1
 
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
@@ -80,9 +79,9 @@ func BenchmarkInsert(b *testing.B) {
 func BenchmarkFind(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkFind_%d", n), func(b *testing.B) {
-			s := generateRandomSliceSet(n)
+			s := algo.GenerateRandomSliceSet(n)
 			tr := getTree(s)
-			key := higher(s)
+			key := algo.Higher(s)
 
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
@@ -90,13 +89,6 @@ func BenchmarkFind(b *testing.B) {
 			}
 		})
 	}
-}
-
-func higher(s []int) int {
-	scopy := make([]int, len(s))
-	copy(scopy, s)
-	slices.Sort(scopy)
-	return scopy[len(s)-1]
 }
 
 func compareInt(keyA, keyB interface{}) int {
@@ -117,30 +109,10 @@ func compareInt(keyA, keyB interface{}) int {
 	return 1
 }
 
-func generateRandomSliceSet(n int) []int {
-	s := make([]int, n)
-	set := map[int]struct{}{}
-	for i := 0; i < n; i++ {
-		rn := randRange(0, n)
-		_, ok := set[rn]
-		if ok {
-			i--
-			continue
-		}
-		set[rn] = struct{}{}
-		s[i] = rn
-	}
-	return s
-}
-
 func getTree(s []int) *tree.Tree {
 	tr := tree.New(compareInt)
 	for i := 0; i < len(s); i++ {
 		tr.Insert(s[i], s[i])
 	}
 	return tr
-}
-
-func randRange(min, max int) int {
-	return rand.Intn(max+1-min) + min
 }
