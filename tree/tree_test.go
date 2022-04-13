@@ -64,7 +64,7 @@ var sizes = []int{1e2, 1e3, 1e4}
 func BenchmarkInsert(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkInsert_%d", n), func(b *testing.B) {
-			s := generateRandomSlice(n)
+			s := generateRandomSliceSet(n)
 			b.ResetTimer()
 
 			for i := 0; i < b.N; i++ {
@@ -77,7 +77,7 @@ func BenchmarkInsert(b *testing.B) {
 func BenchmarkFind(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkFind_%d", n), func(b *testing.B) {
-			s := generateRandomSlice(n)
+			s := generateRandomSliceSet(n)
 			tr := getTree(s)
 			key := randRange(0, n)
 			b.ResetTimer()
@@ -107,10 +107,17 @@ func compareInt(keyA, keyB interface{}) int {
 	return 1
 }
 
-func generateRandomSlice(n int) []int {
+func generateRandomSliceSet(n int) []int {
 	s := make([]int, n)
+	set := map[int]struct{}{}
 	for i := 0; i < n; i++ {
-		s[i] = randRange(0, n)
+		rn := randRange(0, n)
+		_, ok := set[rn]
+		if ok {
+			i--
+			continue
+		}
+		s[i] = rn
 	}
 	return s
 }
