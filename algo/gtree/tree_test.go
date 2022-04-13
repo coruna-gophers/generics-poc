@@ -2,13 +2,13 @@ package gtree_test
 
 import (
 	"fmt"
-	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/exp/constraints"
 
+	"github.com/coruna-gophers/generics-poc/algo"
 	"github.com/coruna-gophers/generics-poc/algo/gtree"
 )
 
@@ -75,29 +75,29 @@ func TestTree_FindNotFound(t *testing.T) {
 
 var sizes = []int{1e6}
 
-//func BenchmarkInsert(b *testing.B) {
-//	for _, n := range sizes {
-//		b.Run(fmt.Sprintf("BenchmarkInsert_%d", n), func(b *testing.B) {
-//			s := generateRandomSlice(n)
-//			b.ResetTimer()
-//
-//			for i := 0; i < b.N; i++ {
-//				getTree(s)
-//			}
-//		})
-//	}
-//}
+func BenchmarkInsert(b *testing.B) {
+	for _, n := range sizes {
+		b.Run(fmt.Sprintf("BenchmarkInsert_%d", n), func(b *testing.B) {
+			s := algo.GenerateRandomSliceSet(n)
+			b.ResetTimer()
+
+			for i := 0; i < b.N; i++ {
+				getTree(s)
+			}
+		})
+	}
+}
 
 func BenchmarkFind(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkFind_%d", n), func(b *testing.B) {
-			s := generateRandomSlice(n)
+			s := algo.GenerateRandomSliceSet(n)
 			b.Log("after generateRandomSlice")
 
 			tr := getTree(s)
 			b.Log("after getree")
 
-			key := randRange(0, n)
+			key := algo.RandRange(0, n)
 			b.Log("after rand")
 
 			b.ResetTimer()
@@ -109,22 +109,10 @@ func BenchmarkFind(b *testing.B) {
 	}
 }
 
-func generateRandomSlice(n int) []int {
-	s := make([]int, n)
-	for i := 0; i < n; i++ {
-		s[i] = randRange(0, n)
-	}
-	return s
-}
-
 func getTree(s []int) *gtree.Tree[int, int] {
 	tr := gtree.New[int, int](compare[int])
 	for k, v := range s {
 		tr.Insert(k, v)
 	}
 	return tr
-}
-
-func randRange(min, max int) int {
-	return rand.Intn(max+1-min) + min
 }
