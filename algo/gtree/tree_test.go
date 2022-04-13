@@ -90,6 +90,9 @@ func BenchmarkInsert(b *testing.B) {
 	}
 }
 
+var findOut interface{}
+var findFoundOut bool
+
 func BenchmarkFind(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkFind_%d", n), func(b *testing.B) {
@@ -97,10 +100,16 @@ func BenchmarkFind(b *testing.B) {
 			key := helper.Higher(s)
 			tr := getTree(s)
 
+			var o1 interface{}
+			var o2 bool
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
-				tr.Find(key)
+				o1, o2 = tr.Find(key)
 			}
+
+			findOut = o1
+			findFoundOut = o2
 		})
 	}
 }
