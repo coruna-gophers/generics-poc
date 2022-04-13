@@ -7,6 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/exp/slices"
 
 	"github.com/coruna-gophers/generics-poc/tree"
 )
@@ -79,7 +80,7 @@ func BenchmarkFind(b *testing.B) {
 		b.Run(fmt.Sprintf("BenchmarkFind_%d", n), func(b *testing.B) {
 			s := generateRandomSliceSet(n)
 			tr := getTree(s)
-			key := randRange(0, n)
+			key := higher(s)
 			b.ResetTimer()
 
 			for i := 0; i < b.N; i++ {
@@ -87,6 +88,13 @@ func BenchmarkFind(b *testing.B) {
 			}
 		})
 	}
+}
+
+func higher(s []int) int {
+	scopy := make([]int, len(s))
+	copy(scopy, s)
+	slices.Sort(scopy)
+	return scopy[len(s)-1]
 }
 
 func compareInt(keyA, keyB interface{}) int {
