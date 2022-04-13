@@ -83,8 +83,8 @@ func BenchmarkFind(b *testing.B) {
 			s := generateRandomSliceSet(n)
 			tr := getTree(s)
 			key := higher(s)
-			b.ResetTimer()
 
+			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				tr.Find(key)
 			}
