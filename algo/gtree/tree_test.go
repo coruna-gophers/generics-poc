@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/exp/constraints"
 
-	"github.com/coruna-gophers/generics-poc/gtree"
+	"github.com/coruna-gophers/generics-poc/algo/gtree"
 )
 
 func TestTree_Insert(t *testing.T) {
