@@ -111,8 +111,8 @@ func BenchmarkFind(b *testing.B) {
 
 func getTree(s []int) *gtree.Tree[int, int] {
 	tr := gtree.New[int, int](compare[int])
-	for k, v := range s {
-		tr.Insert(k, v)
+	for _, v := range s {
+		tr.Insert(v, v)
 	}
 	return tr
 }
