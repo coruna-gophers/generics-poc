@@ -59,7 +59,7 @@ func TestTree_FindNotFound(t *testing.T) {
 	require.Nil(t, value)
 }
 
-var sizes = []int{1e2, 1e3, 1e4}
+var sizes = []int{1e2, 1e3, 1e4, 1e6}
 
 func BenchmarkInsert(b *testing.B) {
 	for _, n := range sizes {
