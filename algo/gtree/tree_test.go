@@ -2,14 +2,14 @@ package gtree_test
 
 import (
 	"fmt"
-	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/exp/constraints"
 
-	"github.com/coruna-gophers/generics-poc/gtree"
+	"github.com/coruna-gophers/generics-poc/algo/gtree"
+	"github.com/coruna-gophers/generics-poc/algo/helper"
 )
 
 func TestTree_Insert(t *testing.T) {
@@ -73,58 +73,51 @@ func TestTree_FindNotFound(t *testing.T) {
 	require.Empty(t, value)
 }
 
-var sizes = []int{1e6}
+var sizes = []int{1e2, 1e3, 1e4, 1e6}
 
-//func BenchmarkInsert(b *testing.B) {
-//	for _, n := range sizes {
-//		b.Run(fmt.Sprintf("BenchmarkInsert_%d", n), func(b *testing.B) {
-//			s := generateRandomSlice(n)
-//			b.ResetTimer()
-//
-//			for i := 0; i < b.N; i++ {
-//				getTree(s)
-//			}
-//		})
-//	}
-//}
-
-func BenchmarkFind(b *testing.B) {
+func BenchmarkInsert(b *testing.B) {
 	for _, n := range sizes {
-		b.Run(fmt.Sprintf("BenchmarkFind_%d", n), func(b *testing.B) {
-			s := generateRandomSlice(n)
-			b.Log("after generateRandomSlice")
-
+		b.Run(fmt.Sprintf("BenchmarkInsert_%d", n), func(b *testing.B) {
+			s := helper.GenerateRandomSliceSet(n)
+			key := helper.Higher(s) + 1
 			tr := getTree(s)
-			b.Log("after getree")
-
-			key := randRange(0, n)
-			b.Log("after rand")
 
 			b.ResetTimer()
-			b.Log("after timer")
 			for i := 0; i < b.N; i++ {
-				tr.Find(key)
+				tr.Insert(key, key)
 			}
 		})
 	}
 }
 
-func generateRandomSlice(n int) []int {
-	s := make([]int, n)
-	for i := 0; i < n; i++ {
-		s[i] = randRange(0, n)
+var findOut interface{}
+var findFoundOut bool
+
+func BenchmarkFind(b *testing.B) {
+	for _, n := range sizes {
+		b.Run(fmt.Sprintf("BenchmarkFind_%d", n), func(b *testing.B) {
+			s := helper.GenerateRandomSliceSet(n)
+			key := helper.Higher(s)
+			tr := getTree(s)
+
+			var o1 interface{}
+			var o2 bool
+
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				o1, o2 = tr.Find(key)
+			}
+
+			findOut = o1
+			findFoundOut = o2
+		})
 	}
-	return s
 }
 
 func getTree(s []int) *gtree.Tree[int, int] {
 	tr := gtree.New[int, int](compare[int])
-	for k, v := range s {
-		tr.Insert(k, v)
+	for _, v := range s {
+		tr.Insert(v, v)
 	}
 	return tr
-}
-
-func randRange(min, max int) int {
-	return rand.Intn(max+1-min) + min
 }

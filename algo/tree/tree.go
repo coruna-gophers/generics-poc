@@ -41,7 +41,7 @@ func (t *Tree) Insert(key, value interface{}) {
 }
 
 func (t *Tree) insert(n *node, entry *entry) {
-	c := t.compare(n.entry.key, entry.key)
+	c := t.compare(entry.key, n.entry.key)
 	if c < 0 || c == 0 {
 		if n.left == nil {
 			n.left = &node{
@@ -71,7 +71,7 @@ func (t *Tree) Find(key interface{}) (interface{}, bool) {
 }
 
 func (t *Tree) find(n *node, key interface{}) (*node, bool) {
-	c := t.compare(n.entry.key, key)
+	c := t.compare(key, n.entry.key)
 	if c == 0 {
 		return n, true
 	}

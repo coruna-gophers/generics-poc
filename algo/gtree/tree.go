@@ -42,7 +42,7 @@ func (t *Tree[K, V]) Insert(key K, value V) {
 }
 
 func (t *Tree[K, V]) insert(n *node[K, V], entry *entry[K, V]) {
-	c := t.compare(n.entry.key, entry.key)
+	c := t.compare(entry.key, n.entry.key)
 	if c < 0 || c == 0 {
 		if n.left == nil {
 			n.left = &node[K, V]{
@@ -72,7 +72,7 @@ func (t *Tree[K, V]) Find(key K) (result V, found bool) {
 }
 
 func (t *Tree[K, V]) find(n *node[K, V], key K) (*node[K, V], bool) {
-	c := t.compare(n.entry.key, key)
+	c := t.compare(key, n.entry.key)
 	if c == 0 {
 		return n, true
 	}

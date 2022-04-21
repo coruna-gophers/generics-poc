@@ -2,13 +2,13 @@ package tree_test
 
 import (
 	"fmt"
-	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/coruna-gophers/generics-poc/tree"
+	"github.com/coruna-gophers/generics-poc/algo/helper"
+	"github.com/coruna-gophers/generics-poc/algo/tree"
 )
 
 func TestTree_Insert(t *testing.T) {
@@ -59,32 +59,43 @@ func TestTree_FindNotFound(t *testing.T) {
 	require.Nil(t, value)
 }
 
-var sizes = []int{1e2, 1e3, 1e4}
+var sizes = []int{1e2, 1e3, 1e4, 1e6}
 
 func BenchmarkInsert(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkInsert_%d", n), func(b *testing.B) {
-			s := generateRandomSlice(n)
-			b.ResetTimer()
+			s := helper.GenerateRandomSliceSet(n)
+			tr := getTree(s)
+			key := helper.Higher(s) + 1
 
+			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
-				getTree(s)
+				tr.Insert(key, key)
 			}
 		})
 	}
 }
 
+var findOut interface{}
+var findFoundOut bool
+
 func BenchmarkFind(b *testing.B) {
 	for _, n := range sizes {
 		b.Run(fmt.Sprintf("BenchmarkFind_%d", n), func(b *testing.B) {
-			s := generateRandomSlice(n)
+			s := helper.GenerateRandomSliceSet(n)
 			tr := getTree(s)
-			key := randRange(0, n)
-			b.ResetTimer()
+			key := helper.Higher(s)
 
+			var o1 interface{}
+			var o2 bool
+
+			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
-				tr.Find(key)
+				o1, o2 = tr.Find(key)
 			}
+
+			findOut = o1
+			findFoundOut = o2
 		})
 	}
 }
@@ -107,22 +118,10 @@ func compareInt(keyA, keyB interface{}) int {
 	return 1
 }
 
-func generateRandomSlice(n int) []int {
-	s := make([]int, n)
-	for i := 0; i < n; i++ {
-		s[i] = randRange(0, n)
-	}
-	return s
-}
-
 func getTree(s []int) *tree.Tree {
 	tr := tree.New(compareInt)
-	for k, v := range s {
-		tr.Insert(k, v)
+	for i := 0; i < len(s); i++ {
+		tr.Insert(s[i], s[i])
 	}
 	return tr
-}
-
-func randRange(min, max int) int {
-	return rand.Intn(max+1-min) + min
 }
